@@ -1,0 +1,127 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- dataの中の値を出力するために括弧をを使用する-->
+      <!-- 値の上書きをしてほしくない時にv-onceを使用する。v-onceの指定位置だけ違うメッセージになっている-->
+      <p v-once>{{ message }}</p>
+      <p>{{ hello }}</p>
+      <p>{{ number + 3 }}</p>
+      <!-- 三項演算子も使えるよ-->
+      <p>{{ ok ? 'YES' : 'NO' }}</p>
+      <!-- methodsで定義した返り値も指定できる 単一の式のみ可能-->
+      <p>{{ sayHi() }}</p>
+      <p v-text="message"></p>
+      <!-- 送られてきた値のタグを適用して表示することができる-->
+      <!-- XXSの危険性があるから基本使わないこと -->
+      <p v-html="html"></p>
+      <!-- v-bindは省略して表示させることができる -->
+      <a v-bind:href="url">Google</a>
+      <a :href="url">Google</a>
+      <!-- []を使用することで属性を動的にしてすることができる-->
+      <a :[attribute]="url">Google</a>
+      <!-- twitterObjectに値を入れて動的に指定するパターン -->
+      <a v-bind="twitterObject">Twitter</a>
+      <!-- 変数名は被ると判別が付かずにエラーになるので注意 また引数を持たない場合は()省略可 -->
+      <p>現在、{{ countUpNumber }}回クリックされています。</p>
+      <button v-on:click="count">カウントアップ</button>
+      <!-- v-onはv-bind同様引数を取ることができる。引数にはDOMイベントを記載する -->
+      <button v-on:click="reverseMessage">メッセージ反転</button>
+      <!-- イベントオブジェクトの取得について -->
+      <p v-on:mousemove="changeMousePosition">マウスを載せてください</p>
+      <p>X:{{ x }} ,Y:{{ y }}</p>
+      <!-- 変数名は被ると判別が付かずにエラーになるので注意 また引数を持たない場合は()省略可 -->
+      <p>現在、{{ countUpNumber1  }}回クリックされています。</p>
+      <!-- v-onディレクティブに引数を持たせる場合 -->
+      <button v-on:click="countUp(2)">カウントアップ</button>
+      <!-- イベントオブジェクトにて引数を二つ持たせたいときは$eventでイベントオブジェクトを渡す -->
+      <p v-on:mousemove="changeMousePositionVersion2(3, $event)">マウスを載せてください</p>
+      <p>X:{{ x1 }} ,Y:{{ y1 }}</p>
+      <!-- イベント修飾子 stopPropagation -->
+      <!-- 後ろへの伝播を止める。つまりchangeMousePositionVersion2イベントをここでは発生させない -->
+      <p v-on:mousemove="changeMousePosition">
+        マウスを載せてください
+        <span v-on:mousemove.stop>反応しないでください。</span>
+        <span v-on:mousemove="noEvent">反応しないでください。</span>
+      </p>
+      <!-- イベント修飾子 preventDefault() -->
+      <!-- デフォルトの動きを止める。今回の場合はaタグの遷移を停止させることができる -->
+      <a v-on:click="noPreventDefault" href="https://google.com">Google</a>
+      <a v-on:click.prevent href="https://google.com">Google</a>
+      <p>X:{{ x }} ,Y:{{ y }}</p>
+      <!-- キー修飾子 エンターを押したら発生-->
+      <input type="text" v-on:keyup.enter="myAlert"/>
+      <!-- キー修飾子 スペースを押したら発生-->
+      <input type="text" v-on:keyup.space="myAlert"/>
+      <!-- キー修飾子 スペースとエンターを押したら発生-->
+      <input type="text" v-on:keyup.space.enter="myAlert"/>
+      <!-- v-onディレクティブの引数を[]を使って動的に指定する -->
+      <!-- 今回は変数eventにclickを定義しv-on:[event]とすることでv-on:clickと同義となる -->
+      <p>現在、{{ countUpEventTestNumber }}回クリックされています。</p>
+      <button v-on:[event]="countUpNumberTest">カウントアップ</button>
+      <!-- v-onディレクティブの省略@-->
+      <!-- v-on:は@と同義となっており省略可。省略する際はコード全体で統一してあげること -->
+      <p>現在、{{ countUpEventTestNumber }}回クリックされています。</p>
+      <button @[event]="countUpNumberTest">カウントアップ</button>
+    </div>
+    <!--  v-model 双方向でデータバインディングを作成する -->
+    <!-- データバインディング -->
+    <!-- Vue⇨htmlにデータを送ることができたけどhtml→Vueでデータを送ることができなかった -->
+    <!-- これを可能にすることを双方向データバインディングという -->
+    <!-- 今回はmessageに「こんにちは」と設定しているがv-model="message"と設定することでhtmlからvue側にデータを送信することができる。つまりmessageの中身を上書きできる -->
+    <div id="model">
+      <input type="text" v-model="message">
+      {{ message }}
+    </div>
+    <!-- computedプロパティ（算出プロパティ） -->
+    <!-- データは動的な値を返すことができない。動的な値を返すにはcomputedプロパティを使用する -->
+    <!-- 以下は同じ表現をするvueのコードだがHTMLではなくvue側で処理をする場合はcoumutedプロパティを使用する -->
+
+    <!-- computedとmethodsの使い分け -->
+    <!-- computedとmethodsで同じ動きを再現することは可能。ただし実務としてはcomputedを使うこと -->
+    <!-- computed:キャッシュ機能がある。 -->
+    <div id="computed">
+      <p>{{ counter }}</p>
+      <button @click="counter += 1"> +1</button>
+      <p>{{ otherCounter }}</p>
+      <button @click="otherCounter += 1"> 別の+1</button>
+      <p>{{ counter > 3 ? '3より大きい' : '3以下' }}</p>
+      <!-- computed:{{}}に()不要 -->
+      <!-- methods:{{}}に()必須。ないと動かない。 -->
+      <p>{{ computedLessThanThree }}</p>
+      <p>{{ methodsLessThanThree() }}</p>
+    </div>
+    <div id ="class">
+      <!-- 色わいを動的に指定したい -->
+      <h1 class="red bg-blue">hello</h1>
+      <!-- htmlの方でtruefalseを使用して表現す場合 -->
+      <!-- :classでバインディング -->
+      <!-- ケバブケースの場合は、単語をクォーテーションで囲う必要がある -->
+      <!--  ケバブケースとは、複合語などの複数の単語が組み合わさった時、単語と単語の間を「-（ハイフン）」で繋ぐ命名規則のこと。-->
+      <h1 :class="{ red:true, 'bg-blue': false }">hello</h1>
+      <!-- データをVueから取得して表示する-->
+      <h1 :class="{red: isActive, 'bg-blue': false}">hello</h1>
+      <!-- isActiveの状態をtrue flaseで切り替えを行うイベント -->
+      <button @click="isActive = !isActive">切り替え</button>
+      <!-- computedを使用して切り替えを行う方法 -->
+      <h1 :class="classObject">hello</h1>
+      <!-- classを動的に指定したい場合 -->
+      <h2 :class="[color, bg]">こんにちは世界</h2>
+      <!-- classをcomputedを利用して動的に設定することもできる -->
+      <h2 :class="[{red: isActive}, bg]">こんにちは</h2>
+    </div>
+    <!-- スタイル属性をオブジェクトを使用して表現する -->
+    <div id="style">
+      <!-- スタイル属性をオブジェクトを使用して表現する。今回はdataを取得して表現 -->
+      <h2 :style="{color: textColor, 'background-color': bgColor}">こんばんは。</h2>
+      <!-- dataに定義してhtmlをシンプルにする。こちらの方がベター。 -->
+      <h2 :style="styleObject">こんばんは。</h2>
+      <!-- スタイルオブジェクトを複数指定したい場合は配列[]にして複数指定できる -->
+      <h2 :style="[styleObject, basicStyle]">こんばんは。</h2>
+    </div>
+    <script src="js/index.js"></script>
+  </body>
+</html>
